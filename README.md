@@ -4,14 +4,14 @@ This web page will estimate .
 
 ## Live preview
 
-https://neurolabusc.github.io/niivue-neglect/
+https://niivue.github.io/niivue-neglect/
 
 ## Getting started
 
 ### To run
 
 ```bash
-git clone git@github.com:neurolabusc/niivue-neglect.git
+git clone git@github.com:niivue/niivue-neglect.git
 cd niivue-neglect
 npm install
 npm run dev
