@@ -3,7 +3,7 @@ async function main() {
   async function addVolumeFromFiles(f) {
       await nv1.loadFromFile(f[0])
       nv1.setColormap(nv1.volumes[2].id, 'red')
-      lesionSlider.onchange()
+      lesionSlider.oninput()
   }
   openBtn.onclick = async function () {
     let input = document.createElement('input')
@@ -31,10 +31,10 @@ async function main() {
     show3Dcrosshair: true,
     onLocationChange: handleLocationChange
   }
-  maskSlider.onchange = function () {
+  maskSlider.oninput = function () {
     nv1.setOpacity(1, this.value /255)
   }
-  lesionSlider.onchange = function () {
+  lesionSlider.oninput = function () {
     nv1.setOpacity(2, this.value /255)
   }
   const nv1 = new Niivue(defaults)
@@ -49,8 +49,8 @@ async function main() {
     {url: './mask_vox.nii.gz', colormap: "blue"},
     {url: './M2095_lesion.nii.gz', colormap: "red"},
   ])
-  maskSlider.onchange()
-  lesionSlider.onchange()
+  maskSlider.oninput()
+  lesionSlider.oninput()
 }
 
 main()
