@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./niivue.css" />
+  <title>Niivue Neglect Predictions</title>
+  <script type="module" crossorigin src="./assets/index-Dmk8zLRW.js"></script>
+</head>
+
+<body>
+  <header>
+    <button id="openBtn">Open Lesion Map</button>
+    <button id="predictBtn">Prediction</button>
+    <label for="maskSlider">Mask Opacity</label>
+    <input
+        type="range"
+        min="1"
+        max="255"
+        value="128"
+        class="slider"
+        id="maskSlider"
+    />
+    <label for="lesionSlider">Lesion Opacity</label>
+    <input
+        type="range"
+        min="1"
+        max="255"
+        value="128"
+        class="slider"
+        id="lesionSlider"
+    />
+    <button id="aboutBtn">About</button>
+  </header>
+  <main id="canvas-container">
+    <canvas id="gl1"></canvas>
+  </main>
+  <footer id="intensity">&nbsp;</footer>
+</body>
+
+</html>
