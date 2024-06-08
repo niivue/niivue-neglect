@@ -100,6 +100,28 @@ async function main() {
   nv1.attachToCanvas(gl1)
   const pca_coeff = (await nv1.loadFromUrl('./pca_values_coeff.nii.gz')).img
   const pca_mu = (await nv1.loadFromUrl('./pca_values_mu.nii.gz')).img
+  async function loadRBFmodel() {
+      const rbf = (await nv1.loadFromUrl('./models_5x10_diff.nii.gz')).img
+      let v = 0;
+      const nModels = rbf[v++]
+      const models = []
+      for (let i = 0; i < nModels; i++) {
+        let model = {}
+        model.dim0 = rbf[v++]
+        model.dim1 = rbf[v++]
+        
+        model.bias_i = rbf[v++]
+        model.gamma_i = rbf[v++]
+        model.SVs = new Float64Array(model.dim0 * model.dim1)
+        for (let j = 0; j < (model.dim0 * model.dim1); j++)
+          model.SVs[j] = rbf[v++]
+        model.sv_coef = new Float64Array(model.dim0)
+        for (let j = 0; j < model.dim0; j++)
+          model.sv_coef[j] = rbf[v++]
+        models.push(model)
+      }
+  }
+  const models = await loadRBFmodel()
   nv1.opts.dragMode = nv1.dragModes.pan
   nv1.opts.multiplanarForceRender = true
   nv1.opts.yoke3Dto2DZoom = true
