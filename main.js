@@ -24,12 +24,15 @@ async function main() {
       return
     }
     let lesionVol = 0
+    let lesionVolTotal = 0
     let nMask = 0
     const nVoxPCA = 5
     const nMaskX = Math.floor(pca_coeff.length / nVoxPCA) //expected size
     let map = new Float64Array(nvox)
     let v = 0
     for (let i = 0; i < nvox; i++) {
+      if (lesion[i] > 0)
+        lesionVolTotal++
       if ((lesion[i] > 0) && (mask[i] > 0))
         lesionVol ++
       if (mask[i] > 1)
@@ -59,9 +62,10 @@ async function main() {
     }
     let acuteCoC = parseFloat(cocNumber.value)
     acuteCoC = norm0to1(acuteCoC, -0.024243014, 0.951938077)
+    let lesionVolTotalML = lesionVolTotal / 1000
     let ROI_volML = lesionVol / 1000
-    ROI_volML = norm0to1(ROI_volML, 0, 21.625)
-    const input_vector = [PC[0], PC[1], PC[2], PC[3], PC[4], acuteCoC, ROI_volML]
+    let ROI_vol0_1 = norm0to1(ROI_volML, 0, 21.625)
+    const input_vector = [PC[0], PC[1], PC[2], PC[3], PC[4], acuteCoC, ROI_vol0_1]
     console.log(input_vector)
     let prediction_sum = 0
     for (let m = 0; m < models.length; m++) {
@@ -99,7 +103,7 @@ async function main() {
       // let b = bias_i
     }
     let prediction_mean = prediction_sum / models.length
-    return [acuteCoC , ROI_volML, prediction_mean]
+    return [acuteCoC , lesionVolTotalML, ROI_volML, prediction_mean]
   }
   openBtn.onclick = async function () {
     let input = document.createElement('input')
@@ -114,8 +118,8 @@ async function main() {
     input.click()
   }
   predictBtn.onclick = function () {
-    const [acuteCoC , ROI_volML, prediction] = neglect_predict()
-    const str = (`Given ${ROI_volML}ml lesion, and ${acuteCoC} acute CoC, predicted recovery is ${prediction}`)
+    const [acuteCoC , lesionVolTotalML, ROI_volML, prediction] = neglect_predict()
+    const str = (`Given ${lesionVolTotalML}ml lesion (with ${ROI_volML} in core neglect voxels), and ${acuteCoC} acute CoC, predicted recovery is ${prediction}`)
     window.alert(str)
   }
   aboutBtn.onclick = function () {
