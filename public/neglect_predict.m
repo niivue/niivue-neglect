@@ -58,11 +58,11 @@ function neglect_predict(fnm, acuteCoC)
     for i = 1:5
         PC(i) = norm0to1(PC(i), -51.9073, 110.0535);
     end
-   acuteCoC = norm0to1(acuteCoC, -0.024243014, 0.951938077);
-    ROI_volML = norm0to1(ROI_volML, 0, 21.625);
+    acuteCoC01 = norm0to1(acuteCoC, -0.024243014, 0.951938077);
+    ROI_volML01 = norm0to1(ROI_volML, 0, 21.625);
     % input_vector = [PC1, PC2, PC3, PC4, PC5, CoC, ROI_vol];
     % Exemplary patient data (with outcome = 0.8155):
-    input_vector = [PC(1), PC(2), PC(3), PC(4), PC(5), acuteCoC, ROI_volML];
+    input_vector = [PC(1), PC(2), PC(3), PC(4), PC(5), acuteCoC01, ROI_volML01];
     fnmModel = fullfile(mpath, 'models_5x10_diff.mat');
     if ~exist(fnmPCA,'file')
         error('Unable to find %s', fnmPCA)

@@ -61,11 +61,11 @@ async function main() {
         PC[p] = norm0to1(PC[p], -51.9073, 110.0535)
     }
     let acuteCoC = parseFloat(cocNumber.value)
-    acuteCoC = norm0to1(acuteCoC, -0.024243014, 0.951938077)
+    let acuteCoC0_1 = norm0to1(acuteCoC, -0.024243014, 0.951938077)
     let lesionVolTotalML = lesionVolTotal / 1000
     let ROI_volML = lesionVol / 1000
     let ROI_vol0_1 = norm0to1(ROI_volML, 0, 21.625)
-    const input_vector = [PC[0], PC[1], PC[2], PC[3], PC[4], acuteCoC, ROI_vol0_1]
+    const input_vector = [PC[0], PC[1], PC[2], PC[3], PC[4], acuteCoC0_1, ROI_vol0_1]
     // console.log(input_vector)
     let prediction_sum = 0
     for (let m = 0; m < models.length; m++) {
@@ -121,7 +121,7 @@ async function main() {
   }
   predictBtn.onclick = function () {
     const [acuteCoC, acuteZ, lesionVolTotalML, ROI_volML, chronCoC, chronZ] = neglect_predict()
-    const str = (`Given ${lesionVolTotalML}ml lesion (with ${ROI_volML} in core neglect voxels), and acute CoC ${acuteCoC}  (z= ${acuteZ}), predicted chronic CoC is ${chronCoC} (z= ${chronZ})`)
+    const str = (`Given ${lesionVolTotalML.toFixed(4)}ml lesion (with ${ROI_volML.toFixed(4)} in core neglect voxels), and acute CoC ${acuteCoC.toFixed(2)}  (z= ${acuteZ.toFixed(4)}), predicted chronic CoC is ${chronCoC.toFixed(2)} (z= ${chronZ.toFixed(4)})`)
     window.alert(str)
   }
   aboutBtn.onclick = function () {
