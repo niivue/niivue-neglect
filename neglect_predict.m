@@ -33,7 +33,8 @@ function neglect_predict(fnm, acuteCoC)
     maskVox = uint8(maskVox012 > 1);
     ROI_volVox = nnz(maskROI & lesion);
     ROI_volML = ROI_volVox / 1000; %convert voxels to ML
-    fprintf("%d lesioned voxels in ROI mask: %g ml\n", ROI_volVox, ROI_volML);
+    lesionVolTotalML = nnz(lesion) / 1000; %convert voxels to ML
+    % fprintf("%d lesioned voxels in ROI mask: %g ml\n", ROI_volVox, ROI_volML);
     %PCA
     fnmPCA = fullfile(mpath, 'pca_values_5x21220.mat');
     if ~exist(fnmPCA,'file')
@@ -89,7 +90,17 @@ function neglect_predict(fnm, acuteCoC)
     end
     % Calculate mean prediction
     prediction_mean = mean(predictions_mdls);
-    disp(['Mean prediction: ' num2str(prediction_mean)]);
+    diffZ = prediction_mean * (38.72560594 + 1.211389735) - 1.211389735;
+    % calculate acute z-score based on user input CoC
+    acuteZ = (acuteCoC - 0.00803)/0.0216; % mean/SD of controls
+    % calculate chronic z-score that can be interpreted by the user
+    chronZ = acuteZ-diffZ;
+    chronCoC = chronZ * 0.0216 + 0.00803;
+    % output text
+    % "Acute z-score = xxx; z-score difference (predicted) = xxx; chronic z-score = xxx.
+    % The predicted score represents the direct improvement between acute and chronic stroke phase (i.e. acute z-score minus chronic z-score). Negative values and a z-score % of about 0 indicate no deficit; the larger the z-score, the more severe the neglect behavior."
+    str = sprintf('Given %gml lesion (with %g in core neglect voxels), and acute CoC %g  (z= %g), predicted chronic CoC is %g (z= %g)\n', lesionVolTotalML, ROI_volML, acuteCoC, acuteZ, chronCoC, chronZ);
+    disp(str);
 end
 function ret = norm0to1(val, mn, mx)
     %return normalized 0..1, linearly interpolated min..max
