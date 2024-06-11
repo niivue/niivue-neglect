@@ -66,7 +66,7 @@ async function main() {
     let ROI_volML = lesionVol / 1000
     let ROI_vol0_1 = norm0to1(ROI_volML, 0, 21.625)
     const input_vector = [PC[0], PC[1], PC[2], PC[3], PC[4], acuteCoC, ROI_vol0_1]
-    console.log(input_vector)
+    // console.log(input_vector)
     let prediction_sum = 0
     for (let m = 0; m < models.length; m++) {
       const model = models[m]
@@ -98,12 +98,14 @@ async function main() {
       let prediction = kernel_values_i.reduce((acc, kernel_value, index) => acc + coefficients_i[index] * kernel_value, 0)
       prediction += bias_i
       prediction_sum += prediction
-      // Feature weights and bias term (if needed for further use)
-      // let w = support_vectors_i.map((sv, index) => sv.map((value, j) => value * coefficients_i[index]))
-      // let b = bias_i
     }
-    let prediction_mean = prediction_sum / models.length
-    return [acuteCoC , lesionVolTotalML, ROI_volML, prediction_mean]
+    const prediction_mean = prediction_sum / models.length
+    const diffZ = prediction_mean * (38.72560594 + 1.211389735) - 1.211389735
+    // calculate acute z-score based on user input CoC
+    const acuteZ = (acuteCoC - 0.00803)/0.0216 // mean/SD of controls
+    const chronZ = acuteZ-diffZ
+    const chronCoC = chronZ * 0.0216 + 0.00803
+    return [acuteCoC, acuteZ, lesionVolTotalML, ROI_volML, chronCoC, chronZ]
   }
   openBtn.onclick = async function () {
     let input = document.createElement('input')
@@ -118,8 +120,8 @@ async function main() {
     input.click()
   }
   predictBtn.onclick = function () {
-    const [acuteCoC , lesionVolTotalML, ROI_volML, prediction] = neglect_predict()
-    const str = (`Given ${lesionVolTotalML}ml lesion (with ${ROI_volML} in core neglect voxels), and ${acuteCoC} acute CoC, predicted recovery is ${prediction}`)
+    const [acuteCoC, acuteZ, lesionVolTotalML, ROI_volML, chronCoC, chronZ] = neglect_predict()
+    const str = (`Given ${lesionVolTotalML}ml lesion (with ${ROI_volML} in core neglect voxels), and acute CoC ${acuteCoC}  (z= ${acuteZ}), predicted chronic CoC is ${chronCoC} (z= ${chronZ})`)
     window.alert(str)
   }
   aboutBtn.onclick = function () {
