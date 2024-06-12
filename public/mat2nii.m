@@ -2,8 +2,10 @@ function ma2nii
 % convert model with Radial basis function kernels from matlab to NIfTI
 % we could use JSON, but we want to retain precision
 
+%fnm = 'models_5x10_diff';
+fnm = 'models_noCoC';
+models = load(strcat(fnm, '.mat')).models;
 
-models = load('models_5x10_diff.mat').models;
 %
 v = 1;
 nii(v) = numel(models);
@@ -29,4 +31,4 @@ for i = 1:numel(models)
         v = v + 1;
     end
 end
-niftiwrite(nii,'models_5x10_diff.nii')
+niftiwrite(nii,strcat(fnm, '.nii'))

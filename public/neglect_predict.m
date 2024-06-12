@@ -1,6 +1,6 @@
 function neglect_predict(fnm, acuteCoC)
-%Predict chronic recovery based on lesion map and acute center of
-%cancellation score.
+%Predict chronic neglect using lesion map and acute center of cancellation
+% Assumes lesion map is normalized to 181x217x181 using SPM
 %Examples
 % neglect_predict; %use GUI;
 % neglect_predict('M2095_lesion.nii.gz', 0.65)
