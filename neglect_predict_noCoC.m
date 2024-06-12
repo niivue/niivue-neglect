@@ -1,0 +1,82 @@
+function neglect_predict_noCoC(fnm)
+%Predict chronic recovery based on lesion map.
+% no acute CoC available (less accurate)
+%Examples
+% neglect_predict; %use GUI;
+% neglect_predict_noCoC('M2095_lesion.nii.gz')
+
+    if nargin < 1
+        [p_file, p_path] = uigetfile('*.nii.gz;*.nii', 'Select lesion map');
+        if p_file==0
+            return
+        end
+        fnm = fullfile(p_path, p_file);
+    end
+    lesion = niftiread(fnm);
+    lesionVolTotalML = nnz(lesion) / 1000; %convert voxels to ML
+    mpath = fileparts(mfilename("fullpath"));
+    fnmMsk = fullfile(mpath, 'mask_noCoC.nii.gz');
+    if ~exist(fnmMsk,'file')
+        error('Unable to find %s', fnmMsk)
+    end
+    maskVox = uint8(niftiread(fnmMsk) > 0);
+    lesionVolMaskML = nnz(lesion(maskVox > 0)) / 1000; %convert voxels to ML
+    %PCA
+    fnmPCA = fullfile(mpath, 'pca_noCoC.mat');
+    if ~exist(fnmPCA,'file')
+        error('Unable to find %s', fnmPCA)
+    end
+    pca_val = load(fnmPCA).pca_val;
+    if size(pca_val.mu,2) ~= nnz(maskVox)
+        error('maskVox size does not match pca_val %d ~= %d', size(pca_val.mu,2), nnz(maskVox))
+    end
+    map_org = double(lesion(:));
+    mask_log = maskVox ~=0;
+    map = map_org(mask_log);
+    PC = (map'-pca_val.mu)*pca_val.coeff;
+    %normalize values to range 0..1
+    for i = 1:5
+        PC(i) = norm0to1(PC(i), -203.8758, 353.6057);
+    end
+    PC
+    input_vector = [PC(1), PC(2), PC(3), PC(4), PC(5)];
+    fnmModel = fullfile(mpath, 'models_noCoC');
+    if ~exist(fnmPCA,'file')
+        error('Unable to find %s', fnmPCA)
+    end
+    models = load(fnmModel).models;
+    % Blank prediction-array
+    predictions_mdls = zeros(numel(models),1);
+    
+    % For each single model (5-fold nested cross validation x 10 model repetitions)
+    for i = 1:numel(models)
+        % Extract information from the i-th model
+        support_vectors_i = models{i}.SVs;
+        coefficients_i = models{i}.sv_coef;
+        bias_i = -models{i}.rho;
+        % Define RBF kernel function
+        gamma_i = models{i}.Parameters(4);
+        rbf_kernel = @(x1, x2) exp(-gamma_i * sum((x1 - x2).^2));
+        % Calculate the kernel values
+        kernel_values_i = arrayfun(@(j) rbf_kernel(input_vector, support_vectors_i(j, :)), 1:size(support_vectors_i, 1));
+        % Calculate the prediction using the regression function
+        predictions_mdls(i) = sum(coefficients_i' .* kernel_values_i) + bias_i;
+        % Feature weights and bias term
+        % w = coefficients_i' * support_vectors_i;
+        % b = bias_i;
+    end
+    % Calculate mean prediction
+    prediction_mean = mean(predictions_mdls);
+    chronZ = prediction_mean * (30.1222097637568 + 1.20431863031291) - 1.20431863031291;
+    % calculate chronic CoC that can be interpreted by the user
+    chronCoC = chronZ * 0.0216 + 0.00803;
+    % output text
+    str = sprintf('Given %gml lesion (%gml in mask), predicted chronic CoC is %g (z= %g)\n', lesionVolTotalML, lesionVolMaskML, chronCoC, chronZ);
+    disp(str);
+end
+function ret = norm0to1(val, mn, mx)
+    %return normalized 0..1, linearly interpolated min..max
+    range = mx - mn;
+    ret = (val - mn)/range;
+    ret = min(max(ret,0),1);
+end
