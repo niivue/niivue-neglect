@@ -3,7 +3,7 @@ function neglect_predict(fnm, acuteCoCl, acuteCoCb, acuteCop)
 % Assumes lesion map is normalized to 181x217x181 using SPM
 %Examples
 % neglect_predict; %use GUI;
-% neglect_predict('example_lesion.nii.gz', 0.87, 0.81, 2)
+% neglect_predict('M2095_lesion.nii.gz', 0.87, 0.81, 2)
     if nargin < 1
         [p_file, p_path] = uigetfile('*.nii.gz;*.nii', 'Select lesion map');
         if p_file==0
