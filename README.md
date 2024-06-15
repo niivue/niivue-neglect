@@ -1,32 +1,20 @@
 ### NiiVue brainchop
 
-Provided a lesion map and an acute [Center of Cancellation (CoC)](https://github.com/neurolabusc/Cancel) score, this web page will predict the chronic neglect severity. The provided lesion map should be normalized to standard space. This is an edge-based solution: the values are computed directly on the web browser, and are not shared with a cloud service. [Try the live demo](https://niivue.github.io/niivue-neglect/)
+Provided a lesion map the [live demo](https://niivue.github.io/niivue-neglect/) web page will predict the chronic neglect severity. The provided lesion map should be normalized to standard space. For optimal performance, acute behavioral data should include three behavioral measures: the [Center of Cancellation (CoC) letter score](https://github.com/neurolabusc/Cancel), the [Center of Cancellation (CoC) bells score](https://github.com/neurolabusc/Cancel) and a simple [Copy Task](https://psycnet.apa.org/doiLanding?doi=10.1037%2Ft28076-000). However, the software will provide an estimate with degraded accuracy without these behavioral measures. This is an edge-based solution: the values are computed directly on the web browser, and are not shared with a cloud service. 
 
-### Optimal Usage
 
-One can create an accurate prediction of long term spatial neglect symptom severity by providing a lesion map showing the location and extent of the injury as well as the acute behavior (the CoC score).
+
+### Usage
 
  1. Open the [live demo](https://niivue.github.io/niivue-neglect/).
  2. Press the `Open Lesion Map` button and select the normalized lesion. You can normalize lesions using [the clinical toolbox for SPM](https://github.com/neurolabusc/Clinical).
  3. You can visually inspect the lesion (shown as red) with respect to the grayscale atlas and the core prediction voxels (shown in blue).
- 4. Make sure the `Acute CoC Score` option is `checked`. 
- 5. Set the [Center of Cancellation (CoC)](https://github.com/neurolabusc/Cancel) score that was measured acutely.
- 6. Press the `Prediction` button to see the expected outcome score.
+ 4. If known, enter the `letters CoC`: this [Center of Cancellation](https://github.com/neurolabusc/Cancel) value should be a number in the range of 0..1. If this value is unknown, make sure this field is empty.
+ 5. If known, enter the `bells CoC`: this [Center of Cancellation](https://github.com/neurolabusc/Cancel) value should be a number in the range of 0..1. If this value is unknown, make sure this field is empty.
+ 6. If known, enter the `copying score`: this [value](https://psycnet.apa.org/doiLanding?doi=10.1037%2Ft28076-000) value should be a number in the range of 0..8. If this value is unknown, make sure this field is empty. 
+ 7. Press the `Prediction` button to see the expected outcome score.
 
-![niivue-neglect user interface](acuteCoC.png)
-
-### Basic Usage
-
-One can create an rough prediction of long term spatial neglect symptom severity by providing a lesion map showing the location and extent of the injury. Note this method is less accurate than methods where acute behavior is known.
-
- 1. Open the [live demo](https://niivue.github.io/niivue-neglect/).
- 2. Press the `Open Lesion Map` button and select the normalized lesion. You can normalize lesions using [the clinical toolbox for SPM](https://github.com/neurolabusc/Clinical).
- 3. You can visually inspect the lesion (shown as red) with respect to the grayscale atlas and the extended prediction voxels (shown in translucent green).
- 4. Make sure the `Acute CoC Score` option is `unchecked`. Notice that the ability to set the symptom severity will be disabled.
- 6. Press the `Prediction` button to see the expected outcome score.
-
-![niivue-neglect user interface](NoCoC.png)
-
+![niivue-neglect user interface](niivue-neglect.png)
 
 ### For Developers
 

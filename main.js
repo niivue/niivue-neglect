@@ -1,5 +1,16 @@
 import { Niivue } from '@niivue/niivue'
 async function main() {
+  function meanOmitNaN(values) {
+    // e.g. let mn = meanOmitNaN([NaN,2, 3])
+    let sum = 0
+    let n = 0
+    for (let i = 0; i < values.length; i++) {
+    if (isNaN(values[i])) continue
+      n ++
+      sum += values[i]
+    }
+    return sum/n
+  } // meanOmitNaN()
   async function addVolumeFromFiles(f) {
       await nv1.loadFromFile(f[0])
       nv1.setColormap(nv1.volumes[3].id, 'red')
@@ -103,11 +114,27 @@ async function main() {
     const chronCoC = chronZ * 0.0216 + 0.00803
     return [lesionVolTotalML, ROI_volML, chronCoC, chronZ]
   } // neglect_predict_noCoC()
-  function neglect_predict() {
+  function meanOmitNaN(values) {
+    // e.g. let mn = meanOmitNaN([NaN,2, 3])
+    let sum = 0
+    let n = 0
+    for (let i = 0; i < values.length; i++) {
+    if (isNaN(values[i])) continue
+      n ++
+      sum += values[i]
+    }
+    return sum/n
+  } // meanOmitNaN()
+  function neglect_predict(acuteLetters, acuteBells, acuteCopy) {
     if (nv1.volumes.length !== 4) {
       window.alert('Please reload the page and open lesions with the "Open Lesion Map" button')
       return
     }
+    let acuteCoC = meanOmitNaN([acuteLetters, acuteBells])
+    let acuteLettersZ = (acuteLetters - 0.00686)/0.0179 // mean/SD of controls
+    let acuteBellsZ = (acuteBells - 0.0092)/0.0253 // mean/SD of controls
+    let acuteCopyZ = (acuteCopy - 0.23333)/0.43018 // mean/SD of controls
+    let acuteZ = meanOmitNaN([acuteLettersZ, acuteBellsZ, acuteCopyZ])
     //volumes: 0=T1, 1=MaskNoCoC, 2=Mask, 3=lesion
     let mask = nv1.volumes[2].img
     let lesion = nv1.volumes[3].img
@@ -153,7 +180,6 @@ async function main() {
     for (let p = 0; p < nVoxPCA; p++) {
         PC[p] = norm0to1(PC[p], -51.9073, 110.0535)
     }
-    let acuteCoC = parseFloat(cocNumber.value)
     let acuteCoC0_1 = norm0to1(acuteCoC, -0.024243014, 0.951938077)
     let lesionVolTotalML = lesionVolTotal / 1000
     let ROI_volML = lesionVol / 1000
@@ -194,8 +220,6 @@ async function main() {
     }
     const prediction_mean = prediction_sum / models.length
     const diffZ = prediction_mean * (38.72560594 + 1.211389735) - 1.211389735
-    // calculate acute z-score based on user input CoC
-    const acuteZ = (acuteCoC - 0.00803)/0.0216 // mean/SD of controls
     const chronZ = acuteZ-diffZ
     const chronCoC = chronZ * 0.0216 + 0.00803
     return [acuteCoC, acuteZ, lesionVolTotalML, ROI_volML, chronCoC, chronZ]
@@ -213,18 +237,19 @@ async function main() {
     input.click()
   }
   predictBtn.onclick = function () {
-    if (cocCheck.checked) {
-      const [acuteCoC, acuteZ, lesionVolTotalML, ROI_volML, chronCoC, chronZ] = neglect_predict()
-      const str = (`Given ${lesionVolTotalML.toFixed(4)}ml lesion (with ${ROI_volML.toFixed(4)} in core neglect voxels), and acute CoC ${acuteCoC.toFixed(2)}  (z= ${acuteZ.toFixed(4)}), predicted chronic CoC is ${chronCoC.toFixed(2)} (z= ${chronZ.toFixed(4)})`)
-      window.alert(str)
-    } else {
+    let acuteLetters = parseFloat(cocLetters.value)
+    let acuteBells = parseFloat(cocBells.value)
+    let acuteCopy = parseFloat(copyScore.value)
+    let acuteCoCNaN = isNaN(acuteLetters) && isNaN(acuteBells)
+    if (acuteCoCNaN) {
       const [lesionVolTotalML, ROI_volML, chronCoC, chronZ] = neglect_predict_noCoC()
       const str = (`Given ${lesionVolTotalML.toFixed(4)}ml lesion (with ${ROI_volML.toFixed(4)} in core neglect voxels), predicted chronic CoC is ${chronCoC.toFixed(4)} (z= ${chronZ.toFixed(4)})`)
       window.alert(str)
-    }
-  }
-  cocCheck.onchange = function () {
-    cocNumber.disabled = !this.checked
+    } else {
+      const [acuteCoC, acuteZ, lesionVolTotalML, ROI_volML, chronCoC, chronZ] = neglect_predict(acuteLetters, acuteBells, acuteCopy)
+      const str = (`Given ${lesionVolTotalML.toFixed(4)}ml lesion (with ${ROI_volML.toFixed(4)} in core neglect voxels), and acute CoC ${acuteCoC.toFixed(2)}  (z= ${acuteZ.toFixed(4)}), predicted chronic CoC is ${chronCoC.toFixed(4)} (z= ${chronZ.toFixed(4)})`)
+      window.alert(str)
+    } 
   }
   function handleLocationChange(data) {
     document.getElementById("intensity").innerHTML = data.string
