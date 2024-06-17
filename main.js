@@ -306,7 +306,7 @@ async function main() {
     { url: './betsct1_unsmooth.nii.gz' },
     {url: './mask_noCoC.nii.gz', colormap: "green"},
     {url: './mask.nii.gz', colormap: "blue"},
-    {url: './M2095_lesion.nii.gz', colormap: "red"},
+    {url: './example_lesion.nii.gz', colormap: "red"},
   ])
   maskSlider.oninput()
   lesionSlider.oninput()
