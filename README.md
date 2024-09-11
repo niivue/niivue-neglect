@@ -1,4 +1,4 @@
-### NiiVue brainchop
+### NiiVue Neglect
 
 Provided a lesion map the [live demo](https://niivue.github.io/niivue-neglect/) web page will predict the chronic neglect severity. The provided lesion map should be normalized to standard space. For optimal performance, acute behavioral data should include three behavioral measures: the [Center of Cancellation (CoC) letter score](https://github.com/neurolabusc/Cancel), the [Center of Cancellation (CoC) bells score](https://github.com/neurolabusc/Cancel) and a simple [Copy Task](https://psycnet.apa.org/doiLanding?doi=10.1037%2Ft28076-000). However, the software will provide an estimate with degraded accuracy without these behavioral measures. This is an edge-based solution: the values are computed directly on the web browser, and are not shared with a cloud service. 
 
