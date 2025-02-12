@@ -31,4 +31,4 @@ npm run dev
 
 These models are described by Röhrig et al.:
 
- - Röhrig L, Wiesen D, Li D, Karnath H-O ([2024](https://www.medrxiv.org/content/10.1101/2024.01.10.24301050v1)). Predicting individual long-term prognosis of spatial neglect based on acute stroke patient data. medRxiv 2024.01.10.24301050, https://doi.org/10.1101/2024.01.10.24301050
+ - Röhrig L, Wiesen D, Li D, Rorden C, Karnath H-O ([2025](https://academic.oup.com/braincomms/article/7/1/fcaf047/7993294)). Predicting individual long-term prognosis of spatial neglect based on acute stroke patient data. Brain Communications, 7:1, https://doi.org/10.1093/braincomms/fcaf047
